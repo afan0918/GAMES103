@@ -84,6 +84,7 @@ https://user-images.githubusercontent.com/70462625/163911263-5ae534f1-698c-4296-
 彈性體我覺得是很難的領域，這部分就跟材料力學比較有關係，程式碼寫起來就在計算 Ic 和 IIc，主流的幾種彈性體模擬方法可以看以下的影片展示。
 
 https://user-images.githubusercontent.com/70462625/163926922-3ba03331-1273-42a1-812b-2be85fc28215.mp4
+
 Descent Methods for Elastic Body Simulation on the GPU (SIGGRAPH Asia 2016)
 
 實現我採用最簡單的StVK方法，打算等流體寫完之後再來挑戰看看 Neo-Hookean，畢竟 StVK 雖然方便，但缺點真的太大了，可從下圖看到 StVK 的抵抗力在過了閥值之後，反而會減小，甚至會變成負的導致模型崩潰，實際跑的過程中不能夠給模型施加太大的力，有點麻煩。
