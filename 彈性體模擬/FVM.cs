@@ -6,26 +6,26 @@ using System.IO;
 
 public class FVM : MonoBehaviour
 {
-	float dt 			= 0.003f;
-	float mass 			= 1;
+	float dt 		= 0.003f;
+	float mass 		= 1;
 	float stiffness_0	= 20000.0f;
 	float stiffness_1 	= 5000.0f;
-	float damp			= 0.999f;
+	float damp		= 0.999f;
 
 	float g = 9.81f;
 
-	int[] 		Tet;// 四面體(tetrahedra)的數據(位置)
-	int tet_number;			//The number of tetrahedra
+	int[] 		Tet;		// 四面體(tetrahedra)的數據(位置)
+	int 		tet_number;	// The number of tetrahedra
 
-	Vector3[] 	Force;//力
-	Vector3[] 	V;//速度
-	Vector3[] 	X;//點位置
-	int number;				//The number of vertices
+	Vector3[] 	Force;		// 力
+	Vector3[] 	V;		// 速度
+	Vector3[] 	X;		// 彈性體節點位置
+	int number;			// The number of vertices
 
-	Matrix4x4[] inv_Dm;
+	Matrix4x4[] 	inv_Dm;
 
-	//For Laplacian smoothing.
-	Vector3[]   V_sum;
+	// For Laplacian smoothing.
+	Vector3[]	V_sum;
 	int[]		V_num;
 
 	Vector3 P = new Vector3(0, -3, 0);
@@ -79,7 +79,7 @@ public class FVM : MonoBehaviour
 			}
 		}
 
-		//Create triangle mesh.
+		// Create triangle mesh.
 		Vector3[] vertices = new Vector3[tet_number * 12];
 		int vertex_number = 0;
 		for (int tet = 0; tet < tet_number; tet++)
@@ -119,7 +119,7 @@ public class FVM : MonoBehaviour
 		V_sum = new Vector3[number];
 		V_num = new int[number];
 
-		//TODO: Need to allocate and assign inv_Dm
+		// allocate and assign inv_Dm
 		inv_Dm = new Matrix4x4[tet_number];
 		for (int tet = 0; tet < tet_number; tet++)
 		{
@@ -131,7 +131,7 @@ public class FVM : MonoBehaviour
 	Matrix4x4 Build_Edge_Matrix(int tet)
 	{
 		Matrix4x4 ret = Matrix4x4.zero;
-		// build edge matrix here.
+		// build edge matrix.
 
 		ret[0, 0] = X[Tet[tet * 4 + 1]][0] - X[Tet[tet * 4]][0];
 		ret[1, 0] = X[Tet[tet * 4 + 1]][1] - X[Tet[tet * 4]][1];
@@ -251,7 +251,7 @@ public class FVM : MonoBehaviour
 		               stiffness_1 * (IIc2 - 2 * Ic2) / 4f;
 		plamda[3, 3] = 1f;
 
-		//組回去
+		// 組回去
 		p = u * plamda * v.transpose;
 		return p;
 	}
@@ -264,13 +264,13 @@ public class FVM : MonoBehaviour
 			for (int i = 0; i < number; i++)
 				V[i].y += 0.3f;
 		}
-
+		// 向右(展示地板摩擦力用)
 		if (Input.GetKeyDown(KeyCode.D))
 		{
 			for (int i = 0; i < number; i++)
 				V[i].x += 1f;
 		}
-
+		// 向左(展示地板摩擦力用)
 		if (Input.GetKeyDown(KeyCode.A))
 		{
 			for (int i = 0; i < number; i++)
@@ -303,9 +303,9 @@ public class FVM : MonoBehaviour
 			// stvk
 			P = StVK(F);
 
-			//
+			// Neo-Hookean 方法(未完成)
 
-			//TODO: Elastic Force
+			// Elastic Force
 			Matrix4x4 EF = M_Multipy(P * (inv_Dm[tet].transpose) , -1f / (6f * inv_Dm[tet].determinant));
 
 			Force[Tet[tet * 4 + 1]][0] += EF[0, 0];
@@ -342,7 +342,7 @@ public class FVM : MonoBehaviour
 		}
 
 		// 笑爛原來是忘記做速度平滑(laplacian)
-		// 乾為什麼做了反而模型直接爆掉，完蛋了
+		// 乾為什麼做了反而模型直接爆掉，完蛋了，後續再檢查原因
 		// for (int tet = 0; tet < tet_number; tet++) {
 		// 	Vector3 v0 = V[Tet[tet * 4]];
 		// 	Vector3 v1 = V[Tet[tet * 4 + 1]];
