@@ -2,17 +2,17 @@
 using System.Collections;
 
 public class Rigid_Bunny : MonoBehaviour {
-	bool launched 		= false;
-	float dt 			= 0.015f;
-	Vector3 v 			= new Vector3(0, 0, 0);	// velocity
-	Vector3 w 			= new Vector3(0, 0, 0);	// angular velocity
+	bool launched 	= false;
+	float dt 	= 0.015f;
+	Vector3 v 	= new Vector3(0, 0, 0);	// velocity
+	Vector3 w 	= new Vector3(0, 0, 0);	// angular velocity
 
-	float mass;									// mass
-	Matrix4x4 I_ref;							// reference inertia
+	float mass;				// mass
+	Matrix4x4 I_ref;			// reference inertia
 
-	float linear_decay	= 0.999f;				// for velocity decay
+	float linear_decay	= 0.999f;	// for velocity decay
 	float angular_decay	= 0.98f;
-	float restitution 	= 0.5f;					// for collision
+	float restitution 	= 0.5f;		// for collision
 
 
 	// Use this for initialization
@@ -42,7 +42,7 @@ public class Rigid_Bunny : MonoBehaviour {
 	}
 
 	Matrix4x4 Get_Cross_Matrix(Vector3 a) {
-		//Get the cross product matrix of vector a
+		// Get the cross product matrix of vector a
 		Matrix4x4 A = Matrix4x4.zero;
 		A [0, 0] = 0;
 		A [0, 1] = -a [2];
@@ -58,7 +58,7 @@ public class Rigid_Bunny : MonoBehaviour {
 	}
 
 	// In this function, update v and w by the impulse due to the collision with
-	//a plane <P, N>
+	// a plane <P, N>
 	void Collision_Impulse(Vector3 P, Vector3 N) {
 		Matrix4x4 R 	= Matrix4x4.TRS (new Vector3 (0, 0, 0), transform.rotation, new Vector3 (1, 1, 1));
 		Vector3	sum_ri 	= new Vector3(0, 0, 0);
@@ -90,20 +90,20 @@ public class Rigid_Bunny : MonoBehaviour {
 			K[1, 1] += 1.0f / mass;
 			K[2, 2] += 1.0f / mass;
 
-			//Calculate Impulse
+			// Calculate Impulse
 			Vector3 temp = -vi - restitution * vi.y * N;
 			Vector3 J = K.inverse * temp;
 
-			//Apply linear impulse
+			// Apply linear impulse
 			v += J / mass;
-			//Apply angular impulse
+			// Apply angular impulse
 			w += (Vector3)(inv_I * Vector3.Cross(ri, J));
 		}
 	}
 
 	// Update is called once per frame
 	void Update () {
-		//Game Control
+		// Game Control
 		if (Input.GetKey("r")) {
 			transform.position = new Vector3 (0, 0.6f, 0);
 			restitution = 0.5f;
@@ -124,11 +124,11 @@ public class Rigid_Bunny : MonoBehaviour {
 		Collision_Impulse(new Vector3(2, 0, 0), new Vector3(-1, 0, 0));
 
 		// Part III: Update position & orientation
-		//Update linear status
+		// Update linear status
 		Vector3 x = transform.position;
 		// 已經開始移動了
 		if (launched)	x += dt * v;
-		//Update angular status
+		// Update angular status
 		Quaternion q = transform.rotation;
 		Quaternion wq = new Quaternion(w.x, w.y, w.z, 0);
 		Quaternion temp_q = wq * q;
