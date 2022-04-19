@@ -5,11 +5,11 @@ public class PBD_model: MonoBehaviour {
 
 	float 		t = 0.0333f;
 	float		damping = 0.99f;
-	int[] 		E;								//edge 邊緣
-	float[] 	L;								//line 線
-	Vector3[] 	V;								//vertex 頂點
+	int[] 		E;				//edge 邊緣
+	float[] 	L;				//line 線
+	Vector3[] 	V;				//vertex 頂點
 
-	Vector3		g = new Vector3(0, -9.8f, 0);   // gravity
+	Vector3		g = new Vector3(0, -9.8f, 0);	// gravity
 	float 		r = 2.7f;
 
 	// Use this for initialization
@@ -46,7 +46,7 @@ public class PBD_model: MonoBehaviour {
 		mesh.uv 		= UV;
 		mesh.RecalculateNormals();
 
-		//Construct the original edge list
+		// Construct the original edge list
 		int[] _E = new int[T.Length * 2];
 		for (int i = 0; i < T.Length; i += 3) {
 			_E[i * 2 + 0] = T[i + 0];
@@ -56,11 +56,11 @@ public class PBD_model: MonoBehaviour {
 			_E[i * 2 + 4] = T[i + 2];
 			_E[i * 2 + 5] = T[i + 0];
 		}
-		//Reorder the original edge list
+		// Reorder the original edge list
 		for (int i = 0; i < _E.Length; i += 2)
 			if (_E[i] > _E[i + 1])
 				Swap(ref _E[i], ref _E[i + 1]);
-		//Sort the original edge list using quicksort
+		// Sort the original edge list using quicksort
 		Quick_Sort (ref _E, 0, _E.Length / 2 - 1);
 
 		int e_number = 0;
@@ -133,11 +133,10 @@ public class PBD_model: MonoBehaviour {
 		Mesh mesh = GetComponent<MeshFilter> ().mesh;
 		Vector3[] vertices = mesh.vertices;
 
-		//Apply PBD here.
 		Vector3[] sum_x = new Vector3[vertices.Length];
 		int[] num_x = new int[vertices.Length];
 
-		//初始化
+		// 初始化
 		for (int i = 0; i < vertices.Length; i++) {
 			sum_x[i] = new Vector3(0, 0, 0);
 			num_x[i] = 0;
@@ -156,7 +155,7 @@ public class PBD_model: MonoBehaviour {
 		}
 
 		for (int i = 0; i < vertices.Length; i++) {
-			//這兩個點不處理，讓布料有掛在天空上的效果
+			// 這兩個點不處理，讓布料有掛在天空上的效果
 			if (i == 0 || i == 20) continue;
 			// vi ← vi + (1/Δt) * ((α * xi + sum - xi) / (α + sum_ni) - xi)
 			// α = 0.2 (作者給出的參數)
@@ -174,10 +173,10 @@ public class PBD_model: MonoBehaviour {
 		Mesh mesh = GetComponent<MeshFilter> ().mesh;
 		Vector3[] X = mesh.vertices;
 
-		//For every vertex, detect collision and apply impulse if needed.
+		// For every vertex, detect collision and apply impulse if needed.
 		GameObject sphere = GameObject.Find("Sphere");
 		Vector3 c = sphere.transform.position;
-		//Handle colllision.
+		// Handle colllision.
 		for (int i = 0; i < X.Length; i++)
 		{
 			if (i == 0 || i == 20) continue;
