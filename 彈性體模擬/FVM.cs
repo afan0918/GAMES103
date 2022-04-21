@@ -189,16 +189,8 @@ public class FVM : MonoBehaviour
 		return m1;
 	}
 
-	float Trace(Matrix4x4 m)
-	{
-		float res = 0f;
-		res += m.m00;
-		res += m.m11;
-		res += m.m22;
-		return res;
-	}
-
-	float un = 0.5f; // F = μN (μ 為滑動摩擦係數，N 為正向力)
+	float un = 0.7f; // F = μN (μ 為滑動摩擦係數，N 為正向力)
+	float ut = 0.8f;
 	void Update_Collision_Point(int idx, float distance, Vector3 N)
 	{
 		X[idx] -= distance * N;
@@ -209,7 +201,7 @@ public class FVM : MonoBehaviour
 		Vector3 v_T = V[idx] - v_N; // 沿著面的分量
 
 		// 求摩擦係數，取 max 是保險不讓模型越滑越快
-		float frictionCoef = Mathf.Max(1.0f - dt * (1.0f + un) * v_N.magnitude / v_T.magnitude, 0.0f);
+		float frictionCoef = Mathf.Max(1.0f - dt * ut * (1.0f + un) * v_N.magnitude / v_T.magnitude, 0.0f);
 
 		// 計算後更新速度
 		Vector3 v_N_new = -un * v_N;
@@ -217,7 +209,6 @@ public class FVM : MonoBehaviour
 		V[idx] = v_N_new + v_T_new;
 	}
 
-	// 這裡 PPT 有寫錯，需要注意一下
 	Matrix4x4 StVK(Matrix4x4 f)
 	{
 		Matrix4x4 p = Matrix4x4.zero;
@@ -226,7 +217,7 @@ public class FVM : MonoBehaviour
 		Matrix4x4 v = Matrix4x4.zero;
 		Matrix4x4 plamda = Matrix4x4.zero;
 
-		// F = UΛ(V.trans)
+		// F = UΛV^T
 		svd.svd(f, ref u, ref s, ref v);
 
 		float lambda0 = s[0, 0];
@@ -243,6 +234,10 @@ public class FVM : MonoBehaviour
 		float IIc1 = 4f * lambda1 * lambda1 * lambda1;
 		float IIc2 = 4f * lambda2 * lambda2 * lambda2;
 
+		// W = (S0 / 8) * (Ic - 3) ^ 2 + (S1 / 4) * (IIc - 2Ic +3)
+		// http://web.cse.ohio-state.edu/~wang.3602/Wang-2016-DME/Wang-2016-DME.pdf
+		// 參考論文 5.1 節
+		
 		plamda[0, 0] = stiffness_0 * (Ic - 3f) * Ic0 / 4f +
 		               stiffness_1 * (IIc0 - 2 * Ic0) / 4f;
 		plamda[1, 1] = stiffness_0 * (Ic - 3f) * Ic1 / 4f +
@@ -251,7 +246,7 @@ public class FVM : MonoBehaviour
 		               stiffness_1 * (IIc2 - 2 * Ic2) / 4f;
 		plamda[3, 3] = 1f;
 
-		// 組回去
+		// P = Udiag(𝜕𝑊/𝜕𝜆0,𝜕𝑊/𝜕𝜆1,𝜕𝑊/𝜕𝜆2)V^T
 		p = u * plamda * v.transpose;
 		return p;
 	}
@@ -259,10 +254,15 @@ public class FVM : MonoBehaviour
 	void _Update()
 	{
 		// Jump up.
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.W))
 		{
 			for (int i = 0; i < number; i++)
-				V[i].y += 0.3f;
+				V[i].y += 5f;
+		}
+		if (Input.GetKeyDown(KeyCode.S))
+		{
+			for (int i = 0; i < number; i++)
+				V[i].y -= 5f;
 		}
 		// 向右(展示地板摩擦力用)
 		if (Input.GetKeyDown(KeyCode.D))
@@ -274,7 +274,7 @@ public class FVM : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.A))
 		{
 			for (int i = 0; i < number; i++)
-				V[i].x += 1f;
+				V[i].x -= 1f;
 		}
 
 		for (int i = 0 ; i < number; i++)
@@ -293,44 +293,38 @@ public class FVM : MonoBehaviour
 
 			// Green Strain
 			// G = (1/2)(FTrans*F-I) = (1/2)(VD^2VTrans-I)
-			Matrix4x4 G = M_Multipy(M_Dec(F.transpose * F, I), 2f);
+			Matrix4x4 G = M_Dec(F.transpose * F, I);
 
 			// Second PK Stress
 			// W 對 G 偏微分 = 2μG + λ*trace(G)I = S
-			Matrix4x4 S = M_addtion(M_Multipy(G, stiffness_1 * 2f), M_Multipy(I, Trace(G) * stiffness_0));
-			Matrix4x4 P = F * S;
+			float trace = G[0, 0] + G[1, 1] + G[2, 2] + G[3, 3];
+			Matrix4x4 S = M_addtion(M_Multipy(G, stiffness_0 * 2f), M_Multipy(I, trace * stiffness_1));
+			// Matrix4x4 P = F * S;
 
 			// stvk
-			P = StVK(F);
+			Matrix4x4 P = StVK(F);
 
 			// Neo-Hookean 方法(未完成)
 
 			// Elastic Force
-			Matrix4x4 EF = M_Multipy(P * (inv_Dm[tet].transpose) , -1f / (6f * inv_Dm[tet].determinant));
+			Matrix4x4 force = M_Multipy(P * (inv_Dm[tet].transpose) , -1f / (6f * inv_Dm[tet].determinant));
 
-			Force[Tet[tet * 4 + 1]][0] += EF[0, 0];
-			Force[Tet[tet * 4 + 1]][1] += EF[1, 0];
-			Force[Tet[tet * 4 + 1]][2] += EF[2, 0];
+			Vector3 f1 = new Vector3(force[0, 0], force[1, 0], force[2, 0]);
+			Vector3 f2 = new Vector3(force[0, 1], force[1, 1], force[2, 1]);
+			Vector3 f3 = new Vector3(force[0, 2], force[1, 2], force[2, 2]);
+			Vector3 f0 = -f1 - f2 - f3;
 
-			Force[Tet[tet * 4 + 2]][0] += EF[0, 1];
-			Force[Tet[tet * 4 + 2]][1] += EF[1, 1];
-			Force[Tet[tet * 4 + 2]][2] += EF[2, 1];
-
-			Force[Tet[tet * 4 + 3]][0] += EF[0, 2];
-			Force[Tet[tet * 4 + 3]][1] += EF[1, 2];
-			Force[Tet[tet * 4 + 3]][2] += EF[2, 2];
-
-			Force[Tet[tet * 4]][0] += -EF[0, 0] - EF[0, 1] - EF[0, 2];
-			Force[Tet[tet * 4]][1] += -EF[1, 0] - EF[1, 1] - EF[1, 2];
-			Force[Tet[tet * 4]][2] += -EF[2, 0] - EF[2, 1] - EF[2, 2];
+			Force[Tet[4 * tet + 1]] += f1;
+			Force[Tet[4 * tet + 2]] += f2;
+			Force[Tet[4 * tet + 3]] += f3;
+			Force[Tet[4 * tet]] += f0;
 		}
 
 		for (int i = 0; i < number; i++)
 		{
 			//TODO: Update X and V here.
-			V[i] += Force[i] * dt;
-			V[i] *= damp;
-			X[i] += V[i] * dt;
+			V[i] = damp * (V[i] + Force[i] / mass * dt);
+			X[i] = X[i] + V[i] * dt;
 
 			//TODO: (Particle) collision with floor.
 			float distance = Vector3.Dot(X[i] - P, N);
@@ -339,28 +333,27 @@ public class FVM : MonoBehaviour
 				Update_Collision_Point(i, distance, N);
 			}
 			V_sum[i] = Vector3.zero;
+			V_num[i] = 0;
 		}
 
 		// 笑爛原來是忘記做速度平滑(laplacian)
 		// 乾為什麼做了反而模型直接爆掉，完蛋了，後續再檢查原因
-		// for (int tet = 0; tet < tet_number; tet++) {
-		// 	Vector3 v0 = V[Tet[tet * 4]];
-		// 	Vector3 v1 = V[Tet[tet * 4 + 1]];
-		// 	Vector3 v2 = V[Tet[tet * 4 + 2]];
-		// 	Vector3 v3 = V[Tet[tet * 4 + 3]];
-		// 	Vector3 vs = v0 + v1 + v2 + v3;
-		// 	Debug.Log("V1:" + v1);
-		// 	// Debug.Log("Vs:" + vs);
-		// 	V_sum[Tet[tet * 4]] += vs;
-		// 	V_sum[Tet[tet * 4 + 1]] += vs;
-		// 	V_sum[Tet[tet * 4 + 2]] += vs;
-		// 	V_sum[Tet[tet * 4 + 3]] += vs;
-		// }
+		// 原因是速度平滑不能全部採用大家的速度，還要乘上一定比例自己的速度，笑爛，好氣喔
+		for (int tet = 0; tet < tet_number; tet++) {
+			V_sum[Tet[4 * tet]] += V[Tet[4 * tet + 1]] + V[Tet[4 * tet + 2]] + V[Tet[4 * tet + 3]];
+			V_num[Tet[4 * tet]] += 3;
+			V_sum[Tet[4 * tet + 1]] += V[Tet[4 * tet]] + V[Tet[4 * tet + 2]] + V[Tet[4 * tet + 3]];
+			V_num[Tet[4 * tet + 1]] += 3;
+			V_sum[Tet[4 * tet + 2]] += V[Tet[4 * tet + 1]] + V[Tet[4 * tet]] + V[Tet[4 * tet + 3]];
+			V_num[Tet[4 * tet + 2]] += 3;
+			V_sum[Tet[4 * tet + 3]] += V[Tet[4 * tet + 1]] + V[Tet[4 * tet + 2]] + V[Tet[4 * tet]];
+			V_num[Tet[4 * tet + 3]] += 3;
+		}
 
-		// for (int i = 0; i < number; i++) {
-		// 	V[i] = V_sum[i] / V_num[i];
-		// 	// Debug.Log("V:" + V[i]);
-		// }
+		for (int i = 0; i < number; i++) {
+			V[i] = V_sum[i] / V_num[i] * 0.4f + V[i] * 0.6f;
+			// Debug.Log("V:" + V[i]);
+		}
 	}
 
 	// Update is called once per frame
