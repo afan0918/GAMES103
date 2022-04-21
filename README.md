@@ -64,13 +64,6 @@ PBD的作法是把整個布料視為多個彈簧相互連接的系統(如下圖)
 
 ![image](https://user-images.githubusercontent.com/70462625/163913434-e554c1d9-05d1-4d8d-b595-dc5016d61037.png)
 
-透過多次迭代整個彈簧質量系統，達到較為穩定的狀態，然後更新整個系統的狀態。簡單的說，就是對於局部的模擬擴展到全局，要做多次迭代的原因可以用下圖來簡單說明，單個彈簧被受力擠壓的時候，會把力不斷地傳給其他彈簧，但其他彈簧變形之後，給出的張力或壓力也會改變，故需要靠多次迭代來近似。
-
-![image](https://user-images.githubusercontent.com/70462625/163913597-ddf671ab-ee8f-4fc0-9ece-dbc23f9a78c2.png)
-
-但缺點是因為採用彈簧質量系統，所以看起來會太彈，後續應該會加上最大拉伸長度來約束布料，讓視覺呈現效果更加逼真一些，另外就是這邊只有做布料和球的碰撞檢測，布料和布料的碰撞檢測就沒做，所以仔細看可以看到布料有穿透的現象。
-我有找到一篇 2017 的 ACM SIGGRAPH 論文有講述怎麼解決此類問題，大意是對布料進行碰撞檢測之後確定哪邊面積大，然後把布料有造成穿透的部分給予一個力把穿透的部分推回去，但此部分我還沒有實現。
-
 程式碼主體在[PBD_model.cs](https://github.com/afan0918/coding-programming/blob/main/%E5%B8%83%E6%96%99%E6%A8%A1%E6%93%AC/PBD_model.cs)
 
 #### 成果展示
@@ -94,13 +87,9 @@ Descent Methods for Elastic Body Simulation on the GPU (SIGGRAPH Asia 2016)
 ![image](https://user-images.githubusercontent.com/70462625/163927284-c2b2f0e3-3872-4dd2-87f6-91a3be23a287.png)
 Irving et al. 2004. Invertible Finite Elements For Robust Simulation of Large Deformation. SCA
 
-#### 無橫向位移
+#### 成果展示
 
-https://user-images.githubusercontent.com/70462625/163925981-6556d525-452a-48d2-b3e6-ead5ead1395e.mp4
-
-#### 有橫向位移
-
-https://user-images.githubusercontent.com/70462625/163925893-a1d63f9f-505b-4876-bcbf-d80f04b2efbf.mp4
+https://user-images.githubusercontent.com/70462625/164390281-169a18df-ab4b-4d5e-8f61-baf65a5d5e4d.mp4
 
 ## 流體模擬
 
