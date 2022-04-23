@@ -16,7 +16,7 @@
 
 目前主流用途與基因演算法類似，被拿來作為解決最佳化問題的工具，因為這類問題大多都可能是NP問題，不過我想做的事情是將粒子的行為可視化，因此將能求解的問題維度降低到2維上。
 
-程式碼有另外放在這個[repository](https://github.com/afan0918/PSO)裡面，另外也有放在集群行為資料夾當中，模擬加上畫面以及註解呈現的程式碼大概只需要三百行左右，想要更改粒子行為的話在[PSO.java](https://github.com/afan0918/PSO/blob/main/PSO.java)中更改此方程即可。
+程式碼另外放在這個[repository](https://github.com/afan0918/PSO)裡面，模擬加上畫面以及註解呈現的程式碼大概只需要三百行左右，想要更改粒子行為的話在[PSO.java](https://github.com/afan0918/PSO/blob/main/PSO.java)中更改此方程即可。
 
 ```java
     /**
@@ -56,13 +56,9 @@ https://user-images.githubusercontent.com/70462625/163896317-5d62b992-b25e-451e-
 
 ## 布料模擬
 
-實時布料模擬目前主流方法有兩種，一種是基於隱式積分法進行模擬，一種是基於PBD(我不知道他的中文名稱)，隱式積分法我還沒有念到很懂，可能之後實現。
+實時布料模擬目前主流方法有兩種，一種是基於隱式積分法進行模擬，一種是基於PBD，隱式積分法我還沒有念到很懂，可能之後實現。
 
 ### Position Based Dynamics (PBD)
-
-PBD的作法是把整個布料視為多個彈簧相互連接的系統(如下圖)
-
-![image](https://user-images.githubusercontent.com/70462625/163913434-e554c1d9-05d1-4d8d-b595-dc5016d61037.png)
 
 程式碼主體在[PBD_model.cs](https://github.com/afan0918/coding-programming/blob/main/%E5%B8%83%E6%96%99%E6%A8%A1%E6%93%AC/PBD_model.cs)
 
@@ -93,5 +89,31 @@ https://user-images.githubusercontent.com/70462625/164390281-169a18df-ab4b-4d5e-
 
 ## 流體模擬
 
-(未完成，希望在海報展之前做完)
+過程中有點像下雨的部分是加水的過程(讓水位增高)，程式碼主體在[wave_motion.cs](https://github.com/afan0918/coding-programming/blob/main/%E6%B0%B4%E9%AB%94%E6%A8%A1%E6%93%AC/wave_motion.cs)
 
+#### 成果展示
+
+https://user-images.githubusercontent.com/70462625/164892352-3cbe577e-77d3-476d-b17a-dffa8d5f997e.mp4
+
+### 參考資料與模型來源
+
+* GAMES103：基於物理的計算機動畫入門，王華民(俄亥俄州立大學)
+* Games202 :高質量實時渲染，閆令琪(加州大學聖塔芭芭拉分校)
+* 剛體模擬相關論文 :
+1. Muller et al. 2005. Meshless Deformations Based on Shape Matching. TOG (SIGGRAPH).
+* 布料模擬相關論文 :
+2. Baraff and Witkin. 1998. Large Step in Cloth Simulation. SIGGRAPH.
+3. Bridson et al. 2003. Simulation of Clothing with Folds and Wrinkles. SCA.
+4. Bergou et al. 2006. A Quadratic Bending Model for Inextensible Surfaces. SCA.
+5. English and Bridson. 2008. Animating Developable Surfaces Using Nonconforming Elements.
+SIGGRAPH. (optional)
+* 彈性體模擬相關論文 :
+6. Irving et al. 2004. Invertible Finite Elements For Robust Simulation of Large Deformation.
+SCA
+7. Wang. 2016. Descent Methods for Elastic Body Simulation on the GPU. TOG (SIGGRAPH
+Asia).
+8. Xu et al. 2015. Nonlinear Material Design Using Principal Stretches. TOG (SIGGRAPH).
+* 流體模擬相關論文 :
+9. Kass and Miller. 1990. Rapid, Stable Fluid Dynamics for Computer Graphics. Computer
+Graphics.
+10. Jos Stam. 1999. Stable Fluids. TOG (SIGGRAPH).
