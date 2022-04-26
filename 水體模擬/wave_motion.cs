@@ -6,7 +6,7 @@ public class wave_motion : MonoBehaviour
 	int size 		= 100;
 	float rate 		= 0.005f;
 	float gamma		= 0.004f;
-	float damping 	= 0.996f;
+	float damping 		= 0.996f;
 	float[,] 	old_h;
 	float[,]	low_h;
 	float[,]	vh;
@@ -16,7 +16,7 @@ public class wave_motion : MonoBehaviour
 	float[,]	cg_p;
 	float[,]	cg_r;
 	float[,]	cg_Ap;
-	bool 	tag = true;
+	bool 		tag = true;
 
 	Vector3 	cube_v = Vector3.zero;
 	Vector3 	cube_w = Vector3.zero;
@@ -180,7 +180,7 @@ public class wave_motion : MonoBehaviour
 				b[i, j] = (new_h[i, j] - low_h[i, j]) / rate;
 			}
 		}
-		//Solve the Poisson equation to obtain vh (virtual height).
+		// Solve the Poisson equation to obtain vh (virtual height).
 		Conjugate_Gradient(cg_mask, b, vh, li, ui, lj, uj);
 	}
 
@@ -199,7 +199,7 @@ public class wave_motion : MonoBehaviour
 			}
 		}
 
-		//Step 2: Block->Water coupling
+		// Block->Water coupling
 		for (int i = 0; i < size; i++)
 		{
 			for (int j = 0; j < size; j++)
@@ -258,7 +258,7 @@ public class wave_motion : MonoBehaviour
 		float[,] new_h = new float[size, size];
 		float[,] h     = new float[size, size];
 
-		//TODO: Load X.y into h.
+		// Load X.y into h.
 		for (int i = 0; i < size; i++)
 		{
 			for (int j = 0; j < size; j++)
@@ -269,7 +269,7 @@ public class wave_motion : MonoBehaviour
 
 		if (Input.GetKeyDown ("r"))
 		{
-			//TODO: Add random water.
+			// Add random water.
 			for (int i = 0; i < size / 10; i++) {
 				for (int j = 0; j < size / 10; j++) {
 					h[(int)(size * Random.value), (int)(size * Random.value)] += Random.value / 20;
@@ -282,7 +282,7 @@ public class wave_motion : MonoBehaviour
 			Shallow_Wave(old_h, h, new_h);
 		}
 
-		//TODO: Store h back into X.y and recalculate normal.
+		// Store h back into X.y and recalculate normal.
 		for (int i = 0; i < size; i++)
 		{
 			for (int j = 0; j < size; j++)
