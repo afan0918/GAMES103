@@ -97,8 +97,8 @@ https://user-images.githubusercontent.com/70462625/164892352-3cbe577e-77d3-476d-
 
 ### 參考資料與模型來源
 
-* GAMES103：基於物理的計算機動畫入門，王華民(俄亥俄州立大學)
-* Games202 :高質量實時渲染，閆令琪(加州大學聖塔芭芭拉分校)
+* Games103 : 基於物理的計算機動畫入門，王華民(俄亥俄州立大學)
+* Games202 : 高質量實時渲染，閆令琪(加州大學聖塔芭芭拉分校)
 * 剛體模擬相關論文 :
 1. Muller et al. 2005. Meshless Deformations Based on Shape Matching. TOG (SIGGRAPH).
 * 布料模擬相關論文 :
@@ -117,3 +117,22 @@ Asia).
 9. Kass and Miller. 1990. Rapid, Stable Fluid Dynamics for Computer Graphics. Computer
 Graphics.
 10. Jos Stam. 1999. Stable Fluids. TOG (SIGGRAPH).
+
+### 正在實現的SPH
+
+念完SPH了，好像還行，先把筆記丟上來好了，之後實作出來再撤掉。
+
+![image](https://user-images.githubusercontent.com/70462625/165312529-7e571d12-2dfd-4b12-9e3c-f7be763c7fb3.png)
+![image](https://user-images.githubusercontent.com/70462625/165312571-a993461e-3203-415d-a1c5-b1a4b5dbebc8.png)
+
+實作計算上對粒子位置進行迭代的計算順序:
+
+![image](https://user-images.githubusercontent.com/70462625/165312916-11e0a333-5f4d-4ec7-9d1d-dfc4f132a8fb.png)
+
+不過粒子最終還要把他轉換成三角形，才能透過顯卡進行渲染，這部分可能就不做了，知識盲區
+![image](https://user-images.githubusercontent.com/70462625/165313651-212dc501-33ea-4850-a0cd-236f45f2f5df.png)
+
+
+
+
+
