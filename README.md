@@ -83,6 +83,10 @@ Descent Methods for Elastic Body Simulation on the GPU (SIGGRAPH Asia 2016)
 ![image](https://user-images.githubusercontent.com/70462625/163927284-c2b2f0e3-3872-4dd2-87f6-91a3be23a287.png)
 Irving et al. 2004. Invertible Finite Elements For Robust Simulation of Large Deformation. SCA
 
+![image](https://user-images.githubusercontent.com/70462625/166108859-947a3200-9943-48cf-8da0-70616f2649af.png)
+
+(後續補充:其實按照這個做，把程式碼內的StVK方法替換掉就好了，其他部分都不用管)
+
 #### 成果展示
 
 https://user-images.githubusercontent.com/70462625/164390281-169a18df-ab4b-4d5e-8f61-baf65a5d5e4d.mp4
