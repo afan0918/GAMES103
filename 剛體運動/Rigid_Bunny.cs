@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Rigid_Bunny : MonoBehaviour {
@@ -59,6 +59,8 @@ public class Rigid_Bunny : MonoBehaviour {
 
 	// In this function, update v and w by the impulse due to the collision with
 	// a plane <P, N>
+	float un = 0.2f; // F = μN (μ 為滑動摩擦係數，N 為正向力)
+    	float ut = 0.3f;
 	void Collision_Impulse(Vector3 P, Vector3 N) {
 		Matrix4x4 R 	= Matrix4x4.TRS (new Vector3 (0, 0, 0), transform.rotation, new Vector3 (1, 1, 1));
 		Vector3	sum_ri 	= new Vector3(0, 0, 0);
@@ -80,7 +82,14 @@ public class Rigid_Bunny : MonoBehaviour {
 		if (sum != 0) {
 			Vector3 ri = sum_ri / sum;
 			Vector3 vi = v + Vector3.Cross(w, ri);
+			Vector3 vn = Vector3.Dot(Vector3.Cross(w, ri), N) * N;
+			Vector3 vt = vi - vn;
+			
 			if (Mathf.Abs(vi.y + 9.81f * dt) < 4.0f * dt)	restitution = 0;
+
+			float a = Mathf.Max(1.0f - dt * ut * (1.0f + un) * vn.magnitude / vt.magnitude, 0.0f);
+			vi = (un * vn) + (a * vt);
+
 			Matrix4x4 inv_I = R * I_ref.inverse * R.transpose;
 
 			// Get K
