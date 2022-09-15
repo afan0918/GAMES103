@@ -1,44 +1,8 @@
-# coding-programming
+# GAMES103：基于物理的计算机动画入门
 
-工學院專題競賽資料，拿來放成果的repository
+拿來放成果的repository
 
 真的好快樂喔哈哈哈哈
-
-## 集群運動
-
-### PSO演算法(粒子群演算法)
-
-粒子群演算法是為了模擬鳥類飛行行為所發展出來的演算法，在粒子群演算法中一個粒子代表鳥群中的一隻鳥，各個粒子具有記憶性並會參考其它粒子的訊息來決定移動的方向。
-
-簡單來說，一群被稱為粒子的潛在解在多維度解空間中找尋最佳解位置，粒子每次移動都會參考自身過往曾找到的的最佳解位置、所有例子的過往最佳解位置，然後再決定移動方向還有距離。
-
-白話來說的意思為 : *粒子目前移動速度 = 粒子上個時間的移動速度 + 自己認為的最佳方向 + 群體認為的最佳方向*，透過不斷移動一群粒子來在有限時間內得到較好的解。
-
-目前主流用途與基因演算法類似，被拿來作為解決最佳化問題的工具，因為這類問題大多都可能是NP問題，不過我想做的事情是將粒子的行為可視化，因此將能求解的問題維度降低到2維上。
-
-程式碼另外放在這個[repository](https://github.com/afan0918/PSO)裡面，模擬加上畫面以及註解呈現的程式碼大概只需要三百行左右，想要更改粒子行為的話在[PSO.java](https://github.com/afan0918/PSO/blob/main/PSO.java)中更改此方程即可。
-
-```java
-    /**
-     * 要求解的方程式
-     * @param x 輸入粒子位置
-     * @return 粒子適應程度
-     */
-    public double func(double[] x) {
-        if (x[0] == 0 && x[1] == 0) {
-            return Math.exp((Math.cos(2 * Math.PI * x[0]) + Math.cos(2 * Math.PI * x[1])) / 2);
-        } else {
-            return Math.sin(Math.sqrt(Math.pow(x[0], 2) +
-                    Math.pow(x[1], 2))) / Math.sqrt(Math.pow(x[0], 2) +
-                    Math.pow(x[1], 2)) + Math.exp((Math.cos(2 * Math.PI * x[0]) +
-                    Math.cos(2 * Math.PI * x[1])) / 2);
-        }
-    }
-```
-
-#### 成果展示
-
-https://user-images.githubusercontent.com/70462625/154410869-95f9d299-f1c9-40ed-8926-ed02fc0c1ae7.mp4
 
 ## 剛體運動
 
